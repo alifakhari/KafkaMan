@@ -46,13 +46,13 @@
             cboTopicProducer = new ComboBox();
             label6 = new Label();
             label5 = new Label();
-            textBox1 = new TextBox();
+            txtProduce = new TextBox();
             groupBox3 = new GroupBox();
             button2 = new Button();
             cbotopicConsumer = new ComboBox();
             label7 = new Label();
             label8 = new Label();
-            textBox2 = new TextBox();
+            txtConsume = new TextBox();
             ((System.ComponentModel.ISupportInitialize)numberPartition).BeginInit();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numberReplica).BeginInit();
@@ -186,17 +186,17 @@
             groupBox2.Controls.Add(cboTopicProducer);
             groupBox2.Controls.Add(label6);
             groupBox2.Controls.Add(label5);
-            groupBox2.Controls.Add(textBox1);
-            groupBox2.Location = new Point(362, 185);
+            groupBox2.Controls.Add(txtProduce);
+            groupBox2.Location = new Point(362, 15);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(470, 133);
+            groupBox2.Size = new Size(470, 187);
             groupBox2.TabIndex = 10;
             groupBox2.TabStop = false;
             groupBox2.Text = "Produce";
             // 
             // button1
             // 
-            button1.Location = new Point(97, 88);
+            button1.Location = new Point(225, 124);
             button1.Name = "button1";
             button1.Size = new Size(121, 25);
             button1.TabIndex = 13;
@@ -206,7 +206,7 @@
             // cboTopicProducer
             // 
             cboTopicProducer.FormattingEnabled = true;
-            cboTopicProducer.Location = new Point(97, 57);
+            cboTopicProducer.Location = new Point(98, 125);
             cboTopicProducer.Name = "cboTopicProducer";
             cboTopicProducer.Size = new Size(121, 25);
             cboTopicProducer.TabIndex = 12;
@@ -214,7 +214,7 @@
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(6, 60);
+            label6.Location = new Point(7, 128);
             label6.Name = "label6";
             label6.Size = new Size(85, 17);
             label6.TabIndex = 11;
@@ -231,12 +231,13 @@
             label5.Text = "Message: ";
             label5.TextAlign = ContentAlignment.MiddleRight;
             // 
-            // textBox1
+            // txtProduce
             // 
-            textBox1.Location = new Point(97, 26);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(367, 25);
-            textBox1.TabIndex = 3;
+            txtProduce.Location = new Point(97, 26);
+            txtProduce.Multiline = true;
+            txtProduce.Name = "txtProduce";
+            txtProduce.Size = new Size(367, 93);
+            txtProduce.TabIndex = 3;
             // 
             // groupBox3
             // 
@@ -244,17 +245,17 @@
             groupBox3.Controls.Add(cbotopicConsumer);
             groupBox3.Controls.Add(label7);
             groupBox3.Controls.Add(label8);
-            groupBox3.Controls.Add(textBox2);
-            groupBox3.Location = new Point(363, 324);
+            groupBox3.Controls.Add(txtConsume);
+            groupBox3.Location = new Point(362, 208);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(470, 133);
+            groupBox3.Size = new Size(470, 187);
             groupBox3.TabIndex = 14;
             groupBox3.TabStop = false;
             groupBox3.Text = "Consume";
             // 
             // button2
             // 
-            button2.Location = new Point(97, 88);
+            button2.Location = new Point(224, 17);
             button2.Name = "button2";
             button2.Size = new Size(121, 25);
             button2.TabIndex = 13;
@@ -264,7 +265,7 @@
             // cbotopicConsumer
             // 
             cbotopicConsumer.FormattingEnabled = true;
-            cbotopicConsumer.Location = new Point(97, 57);
+            cbotopicConsumer.Location = new Point(97, 18);
             cbotopicConsumer.Name = "cbotopicConsumer";
             cbotopicConsumer.Size = new Size(121, 25);
             cbotopicConsumer.TabIndex = 12;
@@ -272,7 +273,7 @@
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(6, 60);
+            label7.Location = new Point(6, 21);
             label7.Name = "label7";
             label7.Size = new Size(85, 17);
             label7.TabIndex = 11;
@@ -282,19 +283,21 @@
             // label8
             // 
             label8.AutoSize = true;
-            label8.Location = new Point(23, 29);
+            label8.Location = new Point(23, 52);
             label8.Name = "label8";
             label8.Size = new Size(68, 17);
             label8.TabIndex = 4;
             label8.Text = "Message: ";
             label8.TextAlign = ContentAlignment.MiddleRight;
             // 
-            // textBox2
+            // txtConsume
             // 
-            textBox2.Location = new Point(97, 26);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(367, 25);
-            textBox2.TabIndex = 3;
+            txtConsume.Location = new Point(97, 49);
+            txtConsume.Multiline = true;
+            txtConsume.Name = "txtConsume";
+            txtConsume.ReadOnly = true;
+            txtConsume.Size = new Size(343, 93);
+            txtConsume.TabIndex = 3;
             // 
             // Form1
             // 
@@ -338,13 +341,13 @@
         private ComboBox cboTopicProducer;
         private Label label6;
         private Label label5;
-        private TextBox textBox1;
+        private TextBox txtProduce;
         private Button button1;
         private GroupBox groupBox3;
         private Button button2;
         private ComboBox cbotopicConsumer;
         private Label label7;
         private Label label8;
-        private TextBox textBox2;
+        private TextBox txtConsume;
     }
 }
