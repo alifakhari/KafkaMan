@@ -16,7 +16,7 @@ namespace KafkaMan
 
 
         #region Functions
-        public void func_getNoofTopics()
+        public void func_getTopics()
         {
 
             using (var adminClient = new AdminClientBuilder(adminConfig).Build())
@@ -29,12 +29,19 @@ namespace KafkaMan
                     var topicNames = metadata.Topics.Select(a => a.Topic).ToList();
 
                     lstTopicList.Items.Clear();
+                    cboTopicProducer.Items.Clear();
+                    cbotopicConsumer.Items.Clear();
 
                     foreach (string topic in topicNames)
                     {
                         lstTopicList.Items.Add(topic);
+                        cboTopicProducer.Items.Add(topic);
+                        cbotopicConsumer.Items.Add(topic);
+
                     }
                     lblLastSync.Text = "Last sync: " + DateTime.Now;
+
+
                 }
                 catch (Exception ex)
                 {
@@ -54,11 +61,13 @@ namespace KafkaMan
                 try
                 {
                     adminClient.CreateTopicsAsync(new TopicSpecification[] {
-                    new TopicSpecification { Name = txtTopicName.Text, ReplicationFactor = 1, NumPartitions = 1 } });
+                    new TopicSpecification { Name = txtTopicName.Text, ReplicationFactor =(short)numberReplica.Value, NumPartitions = (short)numberPartition.Value } });
 
                     MessageBox.Show("New Topic has been created");
+                    txtTopicName.Text = string.Empty;
+                    txtTopicName.Focus();
 
-                    func_getNoofTopics();
+                    func_getTopics();
                 }
                 catch (CreateTopicsException ex)
                 {
@@ -71,12 +80,14 @@ namespace KafkaMan
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            func_getNoofTopics();
+            func_getTopics();
+            cboTopicProducer.SelectedIndex = 0;
+            cbotopicConsumer.SelectedIndex = 0;
         }
 
         private void timer_topicrefresh_Tick(object sender, EventArgs e)
         {
-            func_getNoofTopics();
+            func_getTopics();
         }
     }
 }

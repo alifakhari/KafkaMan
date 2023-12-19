@@ -41,23 +41,37 @@
             groupBox1 = new GroupBox();
             numberReplica = new NumericUpDown();
             label4 = new Label();
+            groupBox2 = new GroupBox();
+            button1 = new Button();
+            cboTopicProducer = new ComboBox();
+            label6 = new Label();
+            label5 = new Label();
+            textBox1 = new TextBox();
+            groupBox3 = new GroupBox();
+            button2 = new Button();
+            cbotopicConsumer = new ComboBox();
+            label7 = new Label();
+            label8 = new Label();
+            textBox2 = new TextBox();
             ((System.ComponentModel.ISupportInitialize)numberPartition).BeginInit();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numberReplica).BeginInit();
+            groupBox2.SuspendLayout();
+            groupBox3.SuspendLayout();
             SuspendLayout();
             // 
             // txtTopicName
             // 
             txtTopicName.Location = new Point(103, 33);
             txtTopicName.Name = "txtTopicName";
-            txtTopicName.Size = new Size(131, 25);
+            txtTopicName.Size = new Size(108, 25);
             txtTopicName.TabIndex = 0;
             // 
             // btnTopicAdd
             // 
-            btnTopicAdd.Location = new Point(103, 156);
+            btnTopicAdd.Location = new Point(103, 135);
             btnTopicAdd.Name = "btnTopicAdd";
-            btnTopicAdd.Size = new Size(77, 25);
+            btnTopicAdd.Size = new Size(108, 25);
             btnTopicAdd.TabIndex = 1;
             btnTopicAdd.Text = "Add Topic";
             btnTopicAdd.UseVisualStyleBackColor = true;
@@ -76,31 +90,31 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(372, 25);
+            label2.Location = new Point(7, 173);
             label2.Name = "label2";
-            label2.Size = new Size(69, 17);
+            label2.Size = new Size(75, 17);
             label2.TabIndex = 3;
-            label2.Text = "Topic List: ";
+            label2.Text = "Topic List - ";
             // 
             // lstTopicList
             // 
             lstTopicList.FormattingEnabled = true;
             lstTopicList.ItemHeight = 17;
-            lstTopicList.Location = new Point(377, 45);
+            lstTopicList.Location = new Point(7, 193);
             lstTopicList.Name = "lstTopicList";
-            lstTopicList.Size = new Size(409, 174);
+            lstTopicList.Size = new Size(311, 242);
             lstTopicList.TabIndex = 4;
             // 
             // timer_topicrefresh
             // 
             timer_topicrefresh.Enabled = true;
-            timer_topicrefresh.Interval = 2000;
+            timer_topicrefresh.Interval = 3000;
             timer_topicrefresh.Tick += timer_topicrefresh_Tick;
             // 
             // lblLastSync
             // 
             lblLastSync.AutoSize = true;
-            lblLastSync.Location = new Point(532, 25);
+            lblLastSync.Location = new Point(77, 173);
             lblLastSync.Name = "lblLastSync";
             lblLastSync.Size = new Size(63, 17);
             lblLastSync.TabIndex = 5;
@@ -130,7 +144,10 @@
             // groupBox1
             // 
             groupBox1.Controls.Add(numberReplica);
+            groupBox1.Controls.Add(lblLastSync);
             groupBox1.Controls.Add(label4);
+            groupBox1.Controls.Add(lstTopicList);
+            groupBox1.Controls.Add(label2);
             groupBox1.Controls.Add(label1);
             groupBox1.Controls.Add(numberPartition);
             groupBox1.Controls.Add(btnTopicAdd);
@@ -138,10 +155,10 @@
             groupBox1.Controls.Add(label3);
             groupBox1.Location = new Point(12, 12);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(300, 214);
+            groupBox1.Size = new Size(324, 453);
             groupBox1.TabIndex = 9;
             groupBox1.TabStop = false;
-            groupBox1.Text = "Add Topic";
+            groupBox1.Text = "Topic";
             // 
             // numberReplica
             // 
@@ -163,15 +180,130 @@
             label4.Text = "Relica: ";
             label4.TextAlign = ContentAlignment.MiddleRight;
             // 
+            // groupBox2
+            // 
+            groupBox2.Controls.Add(button1);
+            groupBox2.Controls.Add(cboTopicProducer);
+            groupBox2.Controls.Add(label6);
+            groupBox2.Controls.Add(label5);
+            groupBox2.Controls.Add(textBox1);
+            groupBox2.Location = new Point(362, 185);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(470, 133);
+            groupBox2.TabIndex = 10;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Produce";
+            // 
+            // button1
+            // 
+            button1.Location = new Point(97, 88);
+            button1.Name = "button1";
+            button1.Size = new Size(121, 25);
+            button1.TabIndex = 13;
+            button1.Text = "Produce ...";
+            button1.UseVisualStyleBackColor = true;
+            // 
+            // cboTopicProducer
+            // 
+            cboTopicProducer.FormattingEnabled = true;
+            cboTopicProducer.Location = new Point(97, 57);
+            cboTopicProducer.Name = "cboTopicProducer";
+            cboTopicProducer.Size = new Size(121, 25);
+            cboTopicProducer.TabIndex = 12;
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(6, 60);
+            label6.Name = "label6";
+            label6.Size = new Size(85, 17);
+            label6.TabIndex = 11;
+            label6.Text = "Topic Name: ";
+            label6.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(23, 29);
+            label5.Name = "label5";
+            label5.Size = new Size(68, 17);
+            label5.TabIndex = 4;
+            label5.Text = "Message: ";
+            label5.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // textBox1
+            // 
+            textBox1.Location = new Point(97, 26);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(367, 25);
+            textBox1.TabIndex = 3;
+            // 
+            // groupBox3
+            // 
+            groupBox3.Controls.Add(button2);
+            groupBox3.Controls.Add(cbotopicConsumer);
+            groupBox3.Controls.Add(label7);
+            groupBox3.Controls.Add(label8);
+            groupBox3.Controls.Add(textBox2);
+            groupBox3.Location = new Point(363, 324);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new Size(470, 133);
+            groupBox3.TabIndex = 14;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "Consume";
+            // 
+            // button2
+            // 
+            button2.Location = new Point(97, 88);
+            button2.Name = "button2";
+            button2.Size = new Size(121, 25);
+            button2.TabIndex = 13;
+            button2.Text = "Consume ...";
+            button2.UseVisualStyleBackColor = true;
+            // 
+            // cbotopicConsumer
+            // 
+            cbotopicConsumer.FormattingEnabled = true;
+            cbotopicConsumer.Location = new Point(97, 57);
+            cbotopicConsumer.Name = "cbotopicConsumer";
+            cbotopicConsumer.Size = new Size(121, 25);
+            cbotopicConsumer.TabIndex = 12;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(6, 60);
+            label7.Name = "label7";
+            label7.Size = new Size(85, 17);
+            label7.TabIndex = 11;
+            label7.Text = "Topic Name: ";
+            label7.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(23, 29);
+            label8.Name = "label8";
+            label8.Size = new Size(68, 17);
+            label8.TabIndex = 4;
+            label8.Text = "Message: ";
+            label8.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // textBox2
+            // 
+            textBox2.Location = new Point(97, 26);
+            textBox2.Name = "textBox2";
+            textBox2.Size = new Size(367, 25);
+            textBox2.TabIndex = 3;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(844, 715);
+            ClientSize = new Size(844, 479);
+            Controls.Add(groupBox3);
+            Controls.Add(groupBox2);
             Controls.Add(groupBox1);
-            Controls.Add(lblLastSync);
-            Controls.Add(lstTopicList);
-            Controls.Add(label2);
             Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
@@ -181,8 +313,11 @@
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)numberReplica).EndInit();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            groupBox3.ResumeLayout(false);
+            groupBox3.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
@@ -199,5 +334,17 @@
         private GroupBox groupBox1;
         private NumericUpDown numberReplica;
         private Label label4;
+        private GroupBox groupBox2;
+        private ComboBox cboTopicProducer;
+        private Label label6;
+        private Label label5;
+        private TextBox textBox1;
+        private Button button1;
+        private GroupBox groupBox3;
+        private Button button2;
+        private ComboBox cbotopicConsumer;
+        private Label label7;
+        private Label label8;
+        private TextBox textBox2;
     }
 }
