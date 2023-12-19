@@ -76,7 +76,7 @@
             lstTopicList.ItemHeight = 17;
             lstTopicList.Location = new Point(55, 114);
             lstTopicList.Name = "lstTopicList";
-            lstTopicList.Size = new Size(217, 293);
+            lstTopicList.Size = new Size(300, 276);
             lstTopicList.TabIndex = 4;
             // 
             // Form1
