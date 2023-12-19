@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "NJk+Z4dg5DT+RfC1EiAc1VPC07niiZLs27loIvvtBqxrqB5qnK/D5ZkMUWm08O5YZReU+2NjP7kEDZfJPmDKUQ==",
+  "success": true,
+  "projectFilePath": "D:\\project\\csharp\\KafkaMan\\KafkaMan\\KafkaMan.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Ali\\.nuget\\packages\\confluent.kafka\\2.3.0\\confluent.kafka.2.3.0.nupkg.sha512",
+    "C:\\Users\\Ali\\.nuget\\packages\\librdkafka.redist\\2.3.0\\librdkafka.redist.2.3.0.nupkg.sha512",
+    "C:\\Users\\Ali\\.nuget\\packages\\system.memory\\4.5.0\\system.memory.4.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}
