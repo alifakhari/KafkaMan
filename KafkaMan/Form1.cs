@@ -14,7 +14,7 @@ namespace KafkaMan
             InitializeComponent();
         }
 
-       
+
         #region Functions
         public void func_getNoofTopics()
         {
@@ -34,10 +34,12 @@ namespace KafkaMan
                     {
                         lstTopicList.Items.Add(topic);
                     }
-                }catch (Exception ex)
+                    lblLastSync.Text = "Last sync: " + DateTime.Now;
+                }
+                catch (Exception ex)
                 {
-                    Console.WriteLine($"An error occured while fetcing topic list: \r\n {0}", ex.Message.ToString() );
-                    MessageBox.Show(ex.Message );
+                    Console.WriteLine($"An error occured while fetcing topic list: \r\n {0}", ex.Message.ToString());
+                    MessageBox.Show(ex.Message);
 
                 }
             }
@@ -68,6 +70,11 @@ namespace KafkaMan
         }
 
         private void Form1_Load(object sender, EventArgs e)
+        {
+            func_getNoofTopics();
+        }
+
+        private void timer_topicrefresh_Tick(object sender, EventArgs e)
         {
             func_getNoofTopics();
         }
