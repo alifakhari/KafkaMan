@@ -42,13 +42,13 @@
             numberReplica = new NumericUpDown();
             label4 = new Label();
             groupBox2 = new GroupBox();
-            button1 = new Button();
+            btnProduce = new Button();
             cboTopicProducer = new ComboBox();
             label6 = new Label();
             label5 = new Label();
             txtProduce = new TextBox();
             groupBox3 = new GroupBox();
-            button2 = new Button();
+            btnConsume = new Button();
             cbotopicConsumer = new ComboBox();
             label7 = new Label();
             label8 = new Label();
@@ -108,7 +108,7 @@
             // timer_topicrefresh
             // 
             timer_topicrefresh.Enabled = true;
-            timer_topicrefresh.Interval = 3000;
+            timer_topicrefresh.Interval = 15000;
             timer_topicrefresh.Tick += timer_topicrefresh_Tick;
             // 
             // lblLastSync
@@ -182,7 +182,7 @@
             // 
             // groupBox2
             // 
-            groupBox2.Controls.Add(button1);
+            groupBox2.Controls.Add(btnProduce);
             groupBox2.Controls.Add(cboTopicProducer);
             groupBox2.Controls.Add(label6);
             groupBox2.Controls.Add(label5);
@@ -194,19 +194,21 @@
             groupBox2.TabStop = false;
             groupBox2.Text = "Produce";
             // 
-            // button1
+            // btnProduce
             // 
-            button1.Location = new Point(225, 124);
-            button1.Name = "button1";
-            button1.Size = new Size(121, 25);
-            button1.TabIndex = 13;
-            button1.Text = "Produce ...";
-            button1.UseVisualStyleBackColor = true;
+            btnProduce.Location = new Point(224, 149);
+            btnProduce.Name = "btnProduce";
+            btnProduce.Size = new Size(121, 25);
+            btnProduce.TabIndex = 13;
+            btnProduce.Text = "Produce ...";
+            btnProduce.UseVisualStyleBackColor = true;
+            btnProduce.Click += btnProduce_Click;
             // 
             // cboTopicProducer
             // 
+            cboTopicProducer.DropDownStyle = ComboBoxStyle.DropDownList;
             cboTopicProducer.FormattingEnabled = true;
-            cboTopicProducer.Location = new Point(98, 125);
+            cboTopicProducer.Location = new Point(97, 150);
             cboTopicProducer.Name = "cboTopicProducer";
             cboTopicProducer.Size = new Size(121, 25);
             cboTopicProducer.TabIndex = 12;
@@ -214,7 +216,7 @@
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(7, 128);
+            label6.Location = new Point(6, 153);
             label6.Name = "label6";
             label6.Size = new Size(85, 17);
             label6.TabIndex = 11;
@@ -236,34 +238,35 @@
             txtProduce.Location = new Point(97, 26);
             txtProduce.Multiline = true;
             txtProduce.Name = "txtProduce";
-            txtProduce.Size = new Size(367, 93);
+            txtProduce.Size = new Size(367, 117);
             txtProduce.TabIndex = 3;
             // 
             // groupBox3
             // 
-            groupBox3.Controls.Add(button2);
+            groupBox3.Controls.Add(btnConsume);
             groupBox3.Controls.Add(cbotopicConsumer);
             groupBox3.Controls.Add(label7);
             groupBox3.Controls.Add(label8);
             groupBox3.Controls.Add(txtConsume);
             groupBox3.Location = new Point(362, 208);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(470, 187);
+            groupBox3.Size = new Size(470, 194);
             groupBox3.TabIndex = 14;
             groupBox3.TabStop = false;
             groupBox3.Text = "Consume";
             // 
-            // button2
+            // btnConsume
             // 
-            button2.Location = new Point(224, 17);
-            button2.Name = "button2";
-            button2.Size = new Size(121, 25);
-            button2.TabIndex = 13;
-            button2.Text = "Consume ...";
-            button2.UseVisualStyleBackColor = true;
+            btnConsume.Location = new Point(224, 17);
+            btnConsume.Name = "btnConsume";
+            btnConsume.Size = new Size(121, 25);
+            btnConsume.TabIndex = 13;
+            btnConsume.Text = "Consume ...";
+            btnConsume.UseVisualStyleBackColor = true;
             // 
             // cbotopicConsumer
             // 
+            cbotopicConsumer.DropDownStyle = ComboBoxStyle.DropDownList;
             cbotopicConsumer.FormattingEnabled = true;
             cbotopicConsumer.Location = new Point(97, 18);
             cbotopicConsumer.Name = "cbotopicConsumer";
@@ -296,7 +299,7 @@
             txtConsume.Multiline = true;
             txtConsume.Name = "txtConsume";
             txtConsume.ReadOnly = true;
-            txtConsume.Size = new Size(343, 93);
+            txtConsume.Size = new Size(367, 132);
             txtConsume.TabIndex = 3;
             // 
             // Form1
@@ -342,9 +345,9 @@
         private Label label6;
         private Label label5;
         private TextBox txtProduce;
-        private Button button1;
+        private Button btnProduce;
         private GroupBox groupBox3;
-        private Button button2;
+        private Button btnConsume;
         private ComboBox cbotopicConsumer;
         private Label label7;
         private Label label8;

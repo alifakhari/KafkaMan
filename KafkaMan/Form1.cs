@@ -1,5 +1,7 @@
 using Confluent.Kafka;
 using Confluent.Kafka.Admin;
+using System.Collections.Concurrent;
+using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace KafkaMan
 {
@@ -9,9 +11,12 @@ namespace KafkaMan
         {
             BootstrapServers = "192.168.189.128:9092"
         };
+
+        static List<TopicCollection> topicCollection = new List<TopicCollection>()
         public Form1()
         {
             InitializeComponent();
+            
         }
 
 
@@ -48,23 +53,14 @@ namespace KafkaMan
                     var topicsMetadata = metadata.Topics;
                     var topicNames = metadata.Topics.Select(a => a.Topic).ToList();
 
-                    lstTopicList.Items.Clear();
-                    cboTopicProducer.Items.Clear();
-                    cbotopicConsumer.Items.Clear();
+
 
                     foreach (string topic in topicNames)
                     {
                         var meta = adminClient.GetMetadata(TimeSpan.FromSeconds(20));
-                        //var count = 0;
                         TopicMetadata? topicMetadata = meta.Topics.SingleOrDefault(t => topic.Equals(t.Topic));
 
-                        //if (topicMetadata != null)
-                        //{
-                        //var count =  topicMetadata.Partitions
-                        //    .Select(x => new TopicPartition(topicMetadata.Topic, x.PartitionId))
-                        //    .ToList();
-                        //}
-
+                        #region<Consumer>
                         ConsumerConfig config = new ConsumerConfig
                         {
                             BootstrapServers = "192.168.189.128:9092",
@@ -82,7 +78,12 @@ namespace KafkaMan
 
                         WatermarkOffsets watermarkOffsets = consumer.QueryWatermarkOffsets(firstPartition, TimeSpan.FromSeconds(10));
                         long total = watermarkOffsets.High - watermarkOffsets.Low;
-                        System.Console.WriteLine(total);
+
+
+                        string item = topic + ", Total Document: " + total;
+                        lstTopicList.Items.Add(item);
+                        #endregion <Consumer>
+
 
                         lstTopicList.Items.Add(topic);
                         cboTopicProducer.Items.Add(topic);
@@ -94,7 +95,7 @@ namespace KafkaMan
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"An error occured while fetcing topic list: \r\n {0}", ex.Message.ToString());
+                    //Console.WriteLine($"An error occured while fetcing topic list: \r\n {0}", ex.Message.ToString());
                     MessageBox.Show(ex.Message);
 
                 }
@@ -118,23 +119,23 @@ namespace KafkaMan
         //    return new List<TopicPartition>();
 
 
-            //ConsumerConfig config = new ConsumerConfig
-            //{
-            //    //BootstrapServers = _bootstrapServers,
-            //    //GroupId = _groupId,
-            //    AutoOffsetReset = AutoOffsetReset.Earliest,
-            //};
-            //ConsumerBuilder<Null, string> builder = new ConsumerBuilder<Null, string>(config);
-            ////builder.SetValueDeserializer(_kafkaConverter);
+        //ConsumerConfig config = new ConsumerConfig
+        //{
+        //    //BootstrapServers = _bootstrapServers,
+        //    //GroupId = _groupId,
+        //    AutoOffsetReset = AutoOffsetReset.Earliest,
+        //};
+        //ConsumerBuilder<Null, string> builder = new ConsumerBuilder<Null, string>(config);
+        ////builder.SetValueDeserializer(_kafkaConverter);
 
-            //IConsumer<Null, string> consumer = builder.Build();
+        //IConsumer<Null, string> consumer = builder.Build();
 
-            //List<TopicPartition> partitions = KafkaAdmin.GetTopicPartitions(, _topic);
-            //TopicPartition firstPartition = partitions.First();
+        //List<TopicPartition> partitions = KafkaAdmin.GetTopicPartitions(, _topic);
+        //TopicPartition firstPartition = partitions.First();
 
-            //WatermarkOffsets watermarkOffsets = consumer.QueryWatermarkOffsets(firstPartition, TimeSpan.FromSeconds(10));
-            //long total = watermarkOffsets.High - watermarkOffsets.Low;
-            //System.Console.WriteLine(total);
+        //WatermarkOffsets watermarkOffsets = consumer.QueryWatermarkOffsets(firstPartition, TimeSpan.FromSeconds(10));
+        //long total = watermarkOffsets.High - watermarkOffsets.Low;
+        //System.Console.WriteLine(total);
 
         //}
         #endregion Functions
@@ -167,13 +168,36 @@ namespace KafkaMan
         private void Form1_Load(object sender, EventArgs e)
         {
             func_getTopics();
-            cboTopicProducer.SelectedIndex = 0;
-            cbotopicConsumer.SelectedIndex = 0;
+            //cboTopicProducer.SelectedIndex = 0;
+            //cbotopicConsumer.SelectedIndex = 0;
         }
 
         private void timer_topicrefresh_Tick(object sender, EventArgs e)
         {
-            func_getTopics();
+            lstTopicList.Items.Clear();
+            
+           func_getTopics();
+        }
+
+        private async void btnProduce_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var config = new ProducerConfig
+                {
+                    BootstrapServers = "192.168.189.128:9092"
+                };
+
+                using (var producer = new ProducerBuilder<Null, string>(config).Build())
+                {
+                    var result = await producer.ProduceAsync(cboTopicProducer.Text, new Message<Null, string> { Value = "This is a message to topic " + cboTopicProducer.Text });
+                }
+                txtProduce.Clear();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex.Message}");
+            }
         }
     }
 }
