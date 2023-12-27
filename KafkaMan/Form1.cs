@@ -1,7 +1,10 @@
 using Confluent.Kafka;
 using Confluent.Kafka.Admin;
+using System.Collections;
 using System.Collections.Concurrent;
-using static Confluent.Kafka.ConfigPropertyNames;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace KafkaMan
 {
@@ -11,9 +14,14 @@ namespace KafkaMan
         {
             BootstrapServers = "192.168.189.128:9092"
         };
+        
+        class CustomTopic
+        {
+            public string TopicName { get; set; }
+            public int PartitionsNumber { get; set; }
+        }
 
-        static List<TopicCollection> topicCollection = new List<TopicCollection>()
-        public Form1()
+        public Form1() 
         {
             InitializeComponent();
             
@@ -30,6 +38,7 @@ namespace KafkaMan
 
             using (var adminClient = new AdminClientBuilder(adminConfig).Build())
             {
+
                 var meta = adminClient.GetMetadata(TimeSpan.FromSeconds(20));
                 TopicMetadata? topicMetadata = meta.Topics.SingleOrDefault(t => topicValue.Equals(t.Topic));
                 if (topicMetadata != null)
@@ -38,7 +47,7 @@ namespace KafkaMan
                         .Select(x => new TopicPartition(topicMetadata.Topic, x.PartitionId))
                         .ToList();
                 }
-            }
+            } 
             return new List<TopicPartition>();
         }
 
@@ -50,15 +59,26 @@ namespace KafkaMan
                 try
                 {
                     var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(10));
+                    var dictionary = JsonConvert.DeserializeObject<dynamic>(metadata.ToString());
+                    
+                    var JTopic = dictionary["Topics"];
+
+                    for (int i = 0; i < JTopic.Count; i++)
+                    {
+                        var PCount =JTopic[i]["Partitions"].Count;
+
+                        foreach
+                    }
+                   
+                    
+
                     var topicsMetadata = metadata.Topics;
                     var topicNames = metadata.Topics.Select(a => a.Topic).ToList();
-
-
 
                     foreach (string topic in topicNames)
                     {
                         var meta = adminClient.GetMetadata(TimeSpan.FromSeconds(20));
-                        TopicMetadata? topicMetadata = meta.Topics.SingleOrDefault(t => topic.Equals(t.Topic));
+                        TopicMetadata? topicMetadata = meta.Topics.SingleOrDefault(t => topic.Equals(t.Topic)) ;
 
                         #region<Consumer>
                         ConsumerConfig config = new ConsumerConfig
