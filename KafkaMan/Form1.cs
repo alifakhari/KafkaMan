@@ -66,8 +66,7 @@ namespace KafkaMan
                     for (int i = 0; i < JTopic.Count; i++)
                     {
                         var PCount =JTopic[i]["Partitions"].Count;
-
-                        foreach
+                        
                     }
                    
                     
