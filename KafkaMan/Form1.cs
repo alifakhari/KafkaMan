@@ -65,7 +65,13 @@ namespace KafkaMan
 
                     for (int i = 0; i < JTopic.Count; i++)
                     {
+                        var topicname = JTopic[i]["Topic"];
+                        
                         var PCount =JTopic[i]["Partitions"].Count;
+                        for (int j=0; j< PCount; j++)
+                        {
+                            Console.WriteLine("");
+                        }
                         
                     }
                    
