@@ -20,6 +20,11 @@ namespace KafkaMan
         {
             public string TopicName { get; set; }
             public int PartitionsNumber { get; set; }
+
+            public override string ToString()
+            {
+                return TopicName + ", Prtition Count: " + PartitionsNumber;
+            }
         }
 
         public Form1()
@@ -31,95 +36,38 @@ namespace KafkaMan
 
         #region Functions
 
-        //public static List<TopicPartition> GetTopicPartitions(string bootstrapServers, string topicValue)
-        public List<TopicPartition> GetTopicPartitions(string topicValue)
-        {
-            //AdminClientConfig adminConfig = new AdminClientConfig { BootstrapServers = bootstrapServers };
-            //AdminClientConfig adminConfig = new AdminClientConfig { BootstrapServers = bootstrapServers };
-
-            using (var adminClient = new AdminClientBuilder(adminConfig).Build())
-            {
-
-                var meta = adminClient.GetMetadata(TimeSpan.FromSeconds(20));
-                TopicMetadata? topicMetadata = meta.Topics.SingleOrDefault(t => topicValue.Equals(t.Topic));
-                if (topicMetadata != null)
-                {
-                    return topicMetadata.Partitions
-                        .Select(x => new TopicPartition(topicMetadata.Topic, x.PartitionId))
-                        .ToList();
-                }
-            }
-            return new List<TopicPartition>();
-        }
-
-
         public void func_getTopics()
         {
             using (var adminClient = new AdminClientBuilder(adminConfig).Build())
             {
                 try
                 {
+                    //var meta = adminClient.GetMetadata(TimeSpan.FromSeconds(20));
+                    //var topicsMetadata = meta.Topics;
+                    //var topicNames = meta.Topics.Select(a => a.Topic).ToList();
+
                     var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(10));
                     var Dictionary = JsonConvert.DeserializeObject<dynamic>(metadata.ToString());
-                    
 
                     var JTopic = Dictionary["Topics"];
 
                     for (int i = 0; i < JTopic.Count; i++)
                     {
                         string topicname = JTopic[i]["Topic"];
+                        cbotopicConsumer.Items.Add(topicname);
+                        cboTopicProducer.Items.Add(topicname);
+
                         int partitionCount = JTopic[i]["Partitions"].Count;
-                        string info = topicname + ", Partiotions: " + partitionCount;
+                        string info = topicname + ", Partitions: " + partitionCount;
 
                         lstTopicList.Items.Add(info);
                     }
 
-
-
-                    //var topicsMetadata = metadata.Topics;
-                    //var topicNames = metadata.Topics.Select(a => a.Topic).ToList();
-
-                    //foreach (string topic in topicNames)
-                    //{
-                    //var meta = adminClient.GetMetadata(TimeSpan.FromSeconds(20));
-                    //TopicMetadata? topicMetadata = meta.Topics.SingleOrDefault(t => topic.Equals(t.Topic));
-
-                    //#region<Consumer>
-                    //ConsumerConfig config = new ConsumerConfig
-                    //{
-                    //    BootstrapServers = "192.168.189.128:9092",
-                    //    GroupId = "1",
-                    //    AutoOffsetReset = AutoOffsetReset.Earliest,
-                    //};
-                    //ConsumerBuilder<Null, string> builder = new ConsumerBuilder<Null, string>(config);
-                    ////builder.SetValueDeserializer(_kafkaConverter);
-
-                    //IConsumer<Null, string> consumer = builder.Build();
-
-                    ////List<TopicPartition> partitions = GetTopicPartitions(BootstrapServers, topic);
-                    //List<TopicPartition> partitions = GetTopicPartitions(topic);
-                    //TopicPartition firstPartition = partitions.First();
-
-                    //WatermarkOffsets watermarkOffsets = consumer.QueryWatermarkOffsets(firstPartition, TimeSpan.FromSeconds(10));
-                    //long total = watermarkOffsets.High - watermarkOffsets.Low;
-
-
-                    //string item = topic + ", Total Document: " + total;
-                    //lstTopicList.Items.Add(item);
-                    //#endregion <Consumer>
-                    //lstTopicList.Items.Add(topic);
-                    //cboTopicProducer.Items.Add(topic);
-                    //cbotopicConsumer.Items.Add(topic);
-                    //}
-
                     lblLastSync.Text = "Last sync: " + DateTime.Now;
-
                 }
                 catch (Exception ex)
                 {
-                    //Console.WriteLine($"An error occured while fetcing topic list: \r\n {0}", ex.Message.ToString());
                     MessageBox.Show(ex.Message);
-
                 }
             }
         }
@@ -129,15 +77,20 @@ namespace KafkaMan
 
         //    using (var adminClient = new AdminClientBuilder(adminConfig).Build())
         //    {
-        //        var meta = adminClient.GetMetadata(TimeSpan.FromSeconds(20));
-        //        TopicMetadata? topicMetadata = meta.Topics.SingleOrDefault(t => topicValue.Equals(t.Topic));
-        //        if (topicMetadata != null)
-        //        {
+        //          var meta = adminClient.GetMetadata(TimeSpan.FromSeconds(20));
+        //          var topicsMetadata = metadata.Topics;
+        //          var topicNames = metadata.Topics.Select(a => a.Topic).ToList();
+
+        //          foreach (string topic in topicNames)
+        //          {
+        //          TopicMetadata? topicMetadata = meta.Topics.SingleOrDefault(t => topicValue.Equals(t.Topic));
+        //          if (topicMetadata != null)
+        //          {
         //            return topicMetadata.Partitions
         //                .Select(x => new TopicPartition(topicMetadata.Topic, x.PartitionId))
         //                .ToList();
-        //        }
-        //    }
+        //          }
+        //      }
         //    return new List<TopicPartition>();
 
 
@@ -175,13 +128,12 @@ namespace KafkaMan
                             new[]{
                     new TopicSpecification { Name = txtTopicName.Text, ReplicationFactor =(short)numberReplica.Value, NumPartitions = (short)numberPartition.Value } });
 
-                        MessageBox.Show("New Topic has been created");
                         txtTopicName.Text = string.Empty;
                         txtTopicName.Focus();
 
                         func_getTopics();
                     }
-                    catch (CreateTopicsException ex)
+                    catch (Exception ex)
                     {
                         MessageBox.Show(ex.Message);
                     }
@@ -212,7 +164,7 @@ namespace KafkaMan
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"{ex.Message}");
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -221,8 +173,21 @@ namespace KafkaMan
             lstTopicList.Items.Clear();
             cbotopicConsumer.Items.Clear();
             cboTopicProducer.Items.Clear();
-
+            
             func_getTopics();
+        }
+
+        private void btnConsume_Click(object sender, EventArgs e)
+        {
+            ConsumerConfig config = new ConsumerConfig
+            {
+                BootstrapServers = "192.168.189.128:9092",
+                GroupId = "1",
+                AutoOffsetReset = AutoOffsetReset.Earliest,
+            };
+
+            ConsumerBuilder<Null, string> builder = new ConsumerBuilder<Null, string>(config);
+            IConsumer<Null, string> consumer = builder.Build();
         }
     }
 }

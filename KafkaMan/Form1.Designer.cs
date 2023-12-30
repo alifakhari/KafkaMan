@@ -274,6 +274,7 @@
             btnConsume.TabIndex = 13;
             btnConsume.Text = "Consume ...";
             btnConsume.UseVisualStyleBackColor = true;
+            btnConsume.Click += btnConsume_Click;
             // 
             // cbotopicConsumer
             // 
