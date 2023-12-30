@@ -39,6 +39,7 @@
             label3 = new Label();
             numberPartition = new NumericUpDown();
             groupBox1 = new GroupBox();
+            btnReferesh = new Button();
             numberReplica = new NumericUpDown();
             label4 = new Label();
             groupBox2 = new GroupBox();
@@ -107,9 +108,7 @@
             // 
             // timer_topicrefresh
             // 
-            timer_topicrefresh.Enabled = true;
             timer_topicrefresh.Interval = 15000;
-            timer_topicrefresh.Tick += timer_topicrefresh_Tick;
             // 
             // lblLastSync
             // 
@@ -143,6 +142,7 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(btnReferesh);
             groupBox1.Controls.Add(numberReplica);
             groupBox1.Controls.Add(lblLastSync);
             groupBox1.Controls.Add(label4);
@@ -159,6 +159,17 @@
             groupBox1.TabIndex = 9;
             groupBox1.TabStop = false;
             groupBox1.Text = "Topic";
+            // 
+            // btnReferesh
+            // 
+            btnReferesh.BackgroundImage = Properties.Resources.gui_refresh_icon_157047;
+            btnReferesh.BackgroundImageLayout = ImageLayout.Stretch;
+            btnReferesh.Location = new Point(294, 169);
+            btnReferesh.Name = "btnReferesh";
+            btnReferesh.Size = new Size(24, 24);
+            btnReferesh.TabIndex = 11;
+            btnReferesh.UseVisualStyleBackColor = true;
+            btnReferesh.Click += btnReferesh_Click_1;
             // 
             // numberReplica
             // 
@@ -352,5 +363,6 @@
         private Label label7;
         private Label label8;
         private TextBox txtConsume;
+        private Button btnReferesh;
     }
 }

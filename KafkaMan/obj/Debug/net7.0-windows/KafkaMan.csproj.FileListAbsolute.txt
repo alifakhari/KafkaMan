@@ -43,3 +43,4 @@ D:\project\csharp\KafkaMan\KafkaMan\bin\Debug\net7.0-windows\runtimes\win-x86\na
 D:\project\csharp\KafkaMan\KafkaMan\bin\Debug\net7.0-windows\runtimes\win-x86\native\zstd.dll
 D:\project\csharp\KafkaMan\KafkaMan\obj\Debug\net7.0-windows\KafkaMan.csproj.CopyComplete
 D:\project\csharp\KafkaMan\KafkaMan\bin\Debug\net7.0-windows\Newtonsoft.Json.dll
+D:\project\csharp\KafkaMan\KafkaMan\obj\Debug\net7.0-windows\KafkaMan.Properties.Resources.resources
