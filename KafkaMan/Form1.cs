@@ -15,6 +15,7 @@ namespace KafkaMan
         {
             BootstrapServers = "192.168.189.128:9092"
         };
+        List<CustomTopic> CustomTopics = new List<CustomTopic>();
 
         class CustomTopic
         {
@@ -30,7 +31,6 @@ namespace KafkaMan
         public Form1()
         {
             InitializeComponent();
-
         }
 
 
@@ -56,11 +56,17 @@ namespace KafkaMan
                         string topicname = JTopic[i]["Topic"];
                         cbotopicConsumer.Items.Add(topicname);
                         cboTopicProducer.Items.Add(topicname);
-
                         int partitionCount = JTopic[i]["Partitions"].Count;
-                        string info = topicname + ", Partitions: " + partitionCount;
 
-                        lstTopicList.Items.Add(info);
+                        CustomTopic ctopic = new CustomTopic()
+                        {
+                            TopicName = topicname,
+                            PartitionsNumber = partitionCount
+                        };
+
+                        CustomTopics.Add(ctopic);
+
+                        lstTopicList.Items.Add(ctopic.ToString());
                     }
 
                     lblLastSync.Text = "Last sync: " + DateTime.Now;
