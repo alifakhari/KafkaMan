@@ -6,6 +6,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using KafkaMan.objs;
+using static Confluent.Kafka.ConfigPropertyNames;
+using System.Threading;
 
 namespace KafkaMan
 {
@@ -179,7 +181,7 @@ namespace KafkaMan
             lstTopicList.Items.Clear();
             cbotopicConsumer.Items.Clear();
             cboTopicProducer.Items.Clear();
-            
+
             func_getTopics();
         }
 
@@ -190,10 +192,48 @@ namespace KafkaMan
                 BootstrapServers = "192.168.189.128:9092",
                 GroupId = "1",
                 AutoOffsetReset = AutoOffsetReset.Earliest,
+                EnableAutoCommit = true
             };
 
-            ConsumerBuilder<Null, string> builder = new ConsumerBuilder<Null, string>(config);
-            IConsumer<Null, string> consumer = builder.Build();
+            using (var c = new ConsumerBuilder<Ignore, string>(config).Build())
+            {
+                c.Subscribe(cbotopicConsumer.Text);
+
+                CancellationTokenSource cts = new CancellationTokenSource();
+                Console.CancelKeyPress += (_, e) =>
+                {
+                    e.Cancel = true; // prevent the process from terminating.
+                    cts.Cancel();
+                };
+
+                try
+                {
+                    while (true)
+                    {
+                        try
+                        {
+                            var cr = c.Consume(cts.Token);
+                            txtConsume.Text = cr.Message.Value.ToString();
+                        }
+                        catch (ConsumeException ex)
+                        {
+                            Console.WriteLine($"Error occured: {ex.Error.Reason}");
+                        }
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    // Close and Release all the resources held by this consumer  
+                    c.Close();
+                }
+            }
         }
+
+
+
+
+
+
+
     }
 }
