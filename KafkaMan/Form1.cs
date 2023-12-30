@@ -72,8 +72,6 @@ namespace KafkaMan
                         string info = topicname + ", Partiotions: " + partitionCount;
 
                         lstTopicList.Items.Add(info);
-
-
                     }
 
 
