@@ -190,9 +190,9 @@ namespace KafkaMan
             ConsumerConfig config = new ConsumerConfig
             {
                 BootstrapServers = "192.168.189.128:9092",
-                GroupId = "1",
-                AutoOffsetReset = AutoOffsetReset.Earliest,
-                EnableAutoCommit = true
+                GroupId = "group_1",
+                AutoOffsetReset = AutoOffsetReset.Latest,
+                EnableAutoCommit = true,
             };
 
             using (var c = new ConsumerBuilder<Ignore, string>(config).Build())
@@ -217,23 +217,15 @@ namespace KafkaMan
                         }
                         catch (ConsumeException ex)
                         {
-                            Console.WriteLine($"Error occured: {ex.Error.Reason}");
+                            MessageBox.Show($"Error occured: {ex.Error.Reason}");
                         }
                     }
                 }
                 catch (OperationCanceledException)
                 {
-                    // Close and Release all the resources held by this consumer  
                     c.Close();
                 }
             }
         }
-
-
-
-
-
-
-
     }
 }
