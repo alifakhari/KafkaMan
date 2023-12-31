@@ -190,30 +190,29 @@ namespace KafkaMan
             ConsumerConfig config = new ConsumerConfig
             {
                 BootstrapServers = "192.168.189.128:9092",
-                GroupId = "group_1",
-                AutoOffsetReset = AutoOffsetReset.Latest,
-                EnableAutoCommit = true,
+                GroupId = "kafka-dotnet-getting-started",
+                AutoOffsetReset = AutoOffsetReset.Earliest,
+                //EnableAutoCommit = true,
             };
 
-            using (var c = new ConsumerBuilder<Ignore, string>(config).Build())
+            CancellationTokenSource cts = new CancellationTokenSource();
+            Console.CancelKeyPress += (_, e) =>
             {
-                c.Subscribe(cbotopicConsumer.Text);
+                e.Cancel = true; // prevent the process from terminating.
+                cts.Cancel();
+            };
 
-                CancellationTokenSource cts = new CancellationTokenSource();
-                Console.CancelKeyPress += (_, e) =>
-                {
-                    e.Cancel = true; // prevent the process from terminating.
-                    cts.Cancel();
-                };
-
+            using (var Consumer = new ConsumerBuilder<string, string>(config).Build())
+            {
+                Consumer.Subscribe(cbotopicConsumer.Text);
                 try
                 {
                     while (true)
                     {
                         try
                         {
-                            var cr = c.Consume(cts.Token);
-                            txtConsume.Text = cr.Message.Value.ToString();
+                            var cr = Consumer.Consume(cts.Token);
+                            txtConsume.Text += cr.Message.Value.ToString();
                         }
                         catch (ConsumeException ex)
                         {
@@ -223,7 +222,11 @@ namespace KafkaMan
                 }
                 catch (OperationCanceledException)
                 {
-                    c.Close();
+                    // Ctrl-C was pressed.
+                }
+                finally
+                {
+                    Consumer.Close();
                 }
             }
         }
