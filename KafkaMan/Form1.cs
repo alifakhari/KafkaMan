@@ -187,12 +187,20 @@ namespace KafkaMan
 
         private void btnConsume_Click(object sender, EventArgs e)
         {
+            //CancellationTokenSource cts = new CancellationTokenSource();
+            //Run_ManualAssign("test_broker", cbotopicConsumer.Text, cts);
             ConsumerConfig config = new ConsumerConfig
             {
                 BootstrapServers = "192.168.189.128:9092",
                 GroupId = "kafka-dotnet-getting-started",
+                EnableAutoOffsetStore = false,
+                EnableAutoCommit = true,
+                StatisticsIntervalMs = 5000,
+                SessionTimeoutMs = 6000,
                 AutoOffsetReset = AutoOffsetReset.Earliest,
-                //EnableAutoCommit = true,
+                EnablePartitionEof = true,
+
+                PartitionAssignmentStrategy = PartitionAssignmentStrategy.CooperativeSticky
             };
 
             CancellationTokenSource cts = new CancellationTokenSource();
@@ -230,5 +238,55 @@ namespace KafkaMan
                 }
             }
         }
+
+
+        public void Run_ManualAssign(string brokerList, string topic, CancellationToken cancellationToken)
+        {
+            var config = new ConsumerConfig
+            {
+                GroupId = "groupid-not-used-but-mandatory",
+                BootstrapServers = "192.168.189.128:9092",
+                // partition offsets can be committed to a group even by consumers not
+                // subscribed to the group. in this example, auto commit is disabled
+                // to prevent this from occurring.
+                EnableAutoCommit = false
+            };
+
+            using (var consumer =
+                new ConsumerBuilder<Ignore, string>(config)
+                    .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
+                    .Build())
+            {
+                //consumer.Assign(topics.Select(topic => new TopicPartitionOffset(topic, 0, Offset.Beginning)).ToList());
+
+                consumer.Assign(new TopicPartitionOffset(topic, 0, Offset.Beginning));
+
+                try
+                {
+                    while (true)
+                    {
+                        try
+                        {
+                            var consumeResult = consumer.Consume(cancellationToken);
+
+                            // Note: End of partition notification has not been enabled, so
+                            // it is guaranteed that the ConsumeResult instance corresponds
+                            // to a Message, and not a PartitionEOF event.
+                            txtConsume.Text = $"Received message at {consumeResult.TopicPartitionOffset}: ${consumeResult.Message.Value}";
+                        }
+                        catch (ConsumeException e)
+                        {
+                            Console.WriteLine($"Consume error: {e.Error.Reason}");
+                        }
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    Console.WriteLine("Closing consumer.");
+                    consumer.Close();
+                }
+            }
+        }
+
     }
 }
