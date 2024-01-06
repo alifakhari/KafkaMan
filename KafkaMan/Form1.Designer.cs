@@ -49,12 +49,13 @@
             label5 = new Label();
             txtProduce = new TextBox();
             groupBox3 = new GroupBox();
+            btnNewConsumer = new Button();
+            lblLog = new Label();
             btnConsume = new Button();
             cbotopicConsumer = new ComboBox();
             label7 = new Label();
             label8 = new Label();
             txtConsume = new TextBox();
-            lblLog = new Label();
             ((System.ComponentModel.ISupportInitialize)numberPartition).BeginInit();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numberReplica).BeginInit();
@@ -255,6 +256,7 @@
             // 
             // groupBox3
             // 
+            groupBox3.Controls.Add(btnNewConsumer);
             groupBox3.Controls.Add(lblLog);
             groupBox3.Controls.Add(btnConsume);
             groupBox3.Controls.Add(cbotopicConsumer);
@@ -268,9 +270,28 @@
             groupBox3.TabStop = false;
             groupBox3.Text = "Consume";
             // 
+            // btnNewConsumer
+            // 
+            btnNewConsumer.Location = new Point(214, 226);
+            btnNewConsumer.Name = "btnNewConsumer";
+            btnNewConsumer.Size = new Size(121, 25);
+            btnNewConsumer.TabIndex = 15;
+            btnNewConsumer.Text = "new consume";
+            btnNewConsumer.UseVisualStyleBackColor = true;
+            btnNewConsumer.Click += btnNewConsumer_Click;
+            // 
+            // lblLog
+            // 
+            lblLog.AutoSize = true;
+            lblLog.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            lblLog.Location = new Point(6, 210);
+            lblLog.Name = "lblLog";
+            lblLog.Size = new Size(0, 15);
+            lblLog.TabIndex = 14;
+            // 
             // btnConsume
             // 
-            btnConsume.Location = new Point(224, 17);
+            btnConsume.Location = new Point(238, 17);
             btnConsume.Name = "btnConsume";
             btnConsume.Size = new Size(121, 25);
             btnConsume.TabIndex = 13;
@@ -315,15 +336,6 @@
             txtConsume.ReadOnly = true;
             txtConsume.Size = new Size(367, 132);
             txtConsume.TabIndex = 3;
-            // 
-            // lblLog
-            // 
-            lblLog.AutoSize = true;
-            lblLog.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            lblLog.Location = new Point(6, 210);
-            lblLog.Name = "lblLog";
-            lblLog.Size = new Size(0, 15);
-            lblLog.TabIndex = 14;
             // 
             // Form1
             // 
@@ -370,12 +382,13 @@
         private TextBox txtProduce;
         private Button btnProduce;
         private GroupBox groupBox3;
-        private Button btnConsume;
         private ComboBox cbotopicConsumer;
         private Label label7;
         private Label label8;
         private TextBox txtConsume;
         private Button btnReferesh;
         private Label lblLog;
+        private Button btnNewConsumer;
+        private Button btnConsume;
     }
 }

@@ -201,8 +201,8 @@ namespace KafkaMan
                                     Console.WriteLine($"Facility: {message.Facility}-{message.Level} Message: {message.Message}"))
                                     .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}. Is Fatal: {e.IsFatal}")).Build())
                 {
-                    var result = producer.ProduceAsync(cboTopicProducer.Text, new Message<long, string> { Value = $"This is a message to topic {cboTopicProducer.Text}: {txtProduce.Text}" }).Result;
-                    lblLog.Text = $"Inserting  into {result.Topic} and Partition {result.Partition}: {result.Status}";
+                    var result = producer.ProduceAsync(cboTopicProducer.Text, new Message<long, string> { Value = $"{DateTime.Now},This is a message to topic {cboTopicProducer.Text}: {txtProduce.Text}" }).Result;
+                    lblLog.Text = $"Inserting  into {result.Topic} and Partition {result.Partition}: {result.Status}, {(result.Status == PersistenceStatus.Persisted ? "Acked by all brokers" : "Not Acked by all brokers")}";
                 }
                 txtProduce.Clear();
             }
@@ -257,8 +257,14 @@ namespace KafkaMan
                         try
                         {
                             var cr = Consumer.Consume(cts.Token);
-                            txtConsume.Text += $"{cr.Message.Value.ToString()} \n";
-                            Consumer.Commit(cr);
+                            if (cr.Message != null)
+                            {
+                                txtConsume.Text += $"{cr.Message.Value.ToString()} \n";
+                                Consumer.Commit(cr);
+                                Consumer.StoreOffset(cr);
+                            }
+                            else
+                                break;
 
                         }
                         catch (ConsumeException ex)
@@ -356,6 +362,58 @@ namespace KafkaMan
             }
         }
 
+        private void btnNewConsumer_Click(object sender, EventArgs e)
+        {
 
+            var _consumerConfig = new ConsumerConfig
+            {
+                BootstrapServers = "192.168.189.128:9092",
+                EnableAutoCommit = false,
+                EnableAutoOffsetStore = false,
+                MaxPollIntervalMs = 300000,
+                GroupId = "default",
+
+                // Read messages from start if no commit exists.
+                AutoOffsetReset = AutoOffsetReset.Earliest
+            };
+            using var consumer = new ConsumerBuilder<long, string>(_consumerConfig)
+                .SetKeyDeserializer(Deserializers.Int64)
+                .SetValueDeserializer(Deserializers.Utf8)
+                .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
+                .Build();
+            try
+            {
+                consumer.Subscribe(cbotopicConsumer.Text);
+                Console.WriteLine("\nConsumer loop started...\n\n");
+                while (true)
+                {
+                    var result =
+                        consumer.Consume(
+                            TimeSpan.FromMilliseconds(_consumerConfig.MaxPollIntervalMs - 1000 ?? 250000));
+                    var message = result?.Message?.Value;
+                    if (message == null)
+                    {
+                        continue;
+                    }
+
+                    Console.WriteLine(
+                        $"Received: {result.Message.Key}:{message} from partition: {result.Partition.Value}");
+
+                    consumer.Commit(result);
+                    consumer.StoreOffset(result);
+                    Thread.Sleep(TimeSpan.FromSeconds(5));
+                }
+            }
+            catch (KafkaException ex)
+            {
+                Console.WriteLine($"Consume error: {ex.Message}");
+                Console.WriteLine("Exiting producer...");
+            }
+            finally
+            {
+                consumer.Close();
+            }
+        }
     }
+
 }
