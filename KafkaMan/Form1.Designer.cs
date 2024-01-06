@@ -54,6 +54,7 @@
             label7 = new Label();
             label8 = new Label();
             txtConsume = new TextBox();
+            lblLog = new Label();
             ((System.ComponentModel.ISupportInitialize)numberPartition).BeginInit();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numberReplica).BeginInit();
@@ -254,6 +255,7 @@
             // 
             // groupBox3
             // 
+            groupBox3.Controls.Add(lblLog);
             groupBox3.Controls.Add(btnConsume);
             groupBox3.Controls.Add(cbotopicConsumer);
             groupBox3.Controls.Add(label7);
@@ -261,7 +263,7 @@
             groupBox3.Controls.Add(txtConsume);
             groupBox3.Location = new Point(362, 208);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(470, 194);
+            groupBox3.Size = new Size(470, 257);
             groupBox3.TabIndex = 14;
             groupBox3.TabStop = false;
             groupBox3.Text = "Consume";
@@ -314,6 +316,15 @@
             txtConsume.Size = new Size(367, 132);
             txtConsume.TabIndex = 3;
             // 
+            // lblLog
+            // 
+            lblLog.AutoSize = true;
+            lblLog.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            lblLog.Location = new Point(6, 210);
+            lblLog.Name = "lblLog";
+            lblLog.Size = new Size(0, 15);
+            lblLog.TabIndex = 14;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -365,5 +376,6 @@
         private Label label8;
         private TextBox txtConsume;
         private Button btnReferesh;
+        private Label lblLog;
     }
 }

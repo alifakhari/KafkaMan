@@ -13,6 +13,7 @@ namespace KafkaMan
 {
     public partial class Form1 : Form
     {
+
         AdminClientConfig adminConfig = new AdminClientConfig()
         {
             BootstrapServers = "192.168.189.128:9092"
@@ -29,6 +30,21 @@ namespace KafkaMan
                 return TopicName + ", Prtition Count: " + PartitionsNumber;
             }
         }
+
+        public static class KafkaConsumerConfig
+        {
+            public static ConsumerConfig GetConfig()
+            {
+                return new ConsumerConfig
+                {
+                    BootstrapServers = "192.168.189.128:9092",
+                    GroupId = "KafkaExampleConsumer",
+                    AutoOffsetReset = AutoOffsetReset.Earliest,
+                    EnableAutoCommit = false,
+                };
+            }
+        }
+
 
         public Form1()
         {
@@ -80,7 +96,7 @@ namespace KafkaMan
             }
         }
 
-        //public void func_getMessageCountinTopic()
+        //public void func_getMessageCountingTopic()
         //{
 
         //    using (var adminClient = new AdminClientBuilder(adminConfig).Build())
@@ -161,12 +177,14 @@ namespace KafkaMan
             {
                 var config = new ProducerConfig
                 {
-                    BootstrapServers = "192.168.189.128:9092"
+                    BootstrapServers = "192.168.189.128:9092",
+                    ClientId = "KafkaExampleProducer",
                 };
 
                 using (var producer = new ProducerBuilder<Null, string>(config).Build())
                 {
-                    var result = await producer.ProduceAsync(cboTopicProducer.Text, new Message<Null, string> { Value = "This is a message to topic " + cboTopicProducer.Text + ": " + txtProduce.Text });
+                    var result = producer.ProduceAsync(cboTopicProducer.Text, new Message<Null, string> { Value = "This is a message to topic " + cboTopicProducer.Text + ": " + txtProduce.Text }).Result;
+                    lblLog.Text = $"Inserting  into {result.Topic} and Partition {result.Partition}: {result.Status}";
                 }
                 txtProduce.Clear();
             }
@@ -215,18 +233,18 @@ namespace KafkaMan
                 Consumer.Subscribe(cbotopicConsumer.Text);
                 try
                 {
-                    while (true)
+                    //while (true)
+                    //{
+                    try
                     {
-                        try
-                        {
-                            var cr = Consumer.Consume(cts.Token);
-                            txtConsume.Text += cr.Message.Value.ToString();
-                        }
-                        catch (ConsumeException ex)
-                        {
-                            MessageBox.Show($"Error occured: {ex.Error.Reason}");
-                        }
+                        var cr = Consumer.Consume(cts.Token);
+                        txtConsume.Text += cr.Message.Value.ToString();
                     }
+                    catch (ConsumeException ex)
+                    {
+                        MessageBox.Show($"Error occured: {ex.Error.Reason}");
+                    }
+                    //}
                 }
                 catch (OperationCanceledException)
                 {
@@ -287,6 +305,55 @@ namespace KafkaMan
                 }
             }
         }
+
+        public void Run_MediumConsumer(string brokerList, string topic, CancellationToken cancellationToken)
+        {
+            var config = new ConsumerConfig
+            {
+                GroupId = "groupid-not-used-but-mandatory",
+                BootstrapServers = "192.168.189.128:9092",
+                // partition offsets can be committed to a group even by consumers not
+                // subscribed to the group. in this example, auto commit is disabled
+                // to prevent this from occurring.
+                EnableAutoCommit = false
+            };
+
+            using (var consumer =
+                new ConsumerBuilder<Ignore, string>(config)
+                    .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
+                    .Build())
+            {
+                //consumer.Assign(topics.Select(topic => new TopicPartitionOffset(topic, 0, Offset.Beginning)).ToList());
+
+                consumer.Assign(new TopicPartitionOffset(topic, 0, Offset.Beginning));
+
+                try
+                {
+                    while (true)
+                    {
+                        try
+                        {
+                            var consumeResult = consumer.Consume(cancellationToken);
+
+                            // Note: End of partition notification has not been enabled, so
+                            // it is guaranteed that the ConsumeResult instance corresponds
+                            // to a Message, and not a PartitionEOF event.
+                            txtConsume.Text = $"Received message at {consumeResult.TopicPartitionOffset}: ${consumeResult.Message.Value}";
+                        }
+                        catch (ConsumeException e)
+                        {
+                            Console.WriteLine($"Consume error: {e.Error.Reason}");
+                        }
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    Console.WriteLine("Closing consumer.");
+                    consumer.Close();
+                }
+            }
+        }
+
 
     }
 }
