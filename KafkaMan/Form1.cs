@@ -205,56 +205,57 @@ namespace KafkaMan
 
         private void btnConsume_Click(object sender, EventArgs e)
         {
-            //CancellationTokenSource cts = new CancellationTokenSource();
-            //Run_ManualAssign("test_broker", cbotopicConsumer.Text, cts);
-            ConsumerConfig config = new ConsumerConfig
-            {
-                BootstrapServers = "192.168.189.128:9092",
-                GroupId = "kafka-dotnet-getting-started",
-                EnableAutoOffsetStore = false,
-                EnableAutoCommit = true,
-                StatisticsIntervalMs = 5000,
-                SessionTimeoutMs = 6000,
-                AutoOffsetReset = AutoOffsetReset.Earliest,
-                EnablePartitionEof = true,
-
-                PartitionAssignmentStrategy = PartitionAssignmentStrategy.CooperativeSticky
-            };
-
             CancellationTokenSource cts = new CancellationTokenSource();
-            Console.CancelKeyPress += (_, e) =>
-            {
-                e.Cancel = true; // prevent the process from terminating.
-                cts.Cancel();
-            };
+            Run_ManualAssign("test_broker", cbotopicConsumer.Text, cts);
+            //Run_MediumConsumer();
+            //ConsumerConfig config = new ConsumerConfig
+            //{
+            //    BootstrapServers = "192.168.189.128:9092",
+            //    GroupId = "kafka-dotnet-getting-started",
+            //    EnableAutoOffsetStore = false,
+            //    EnableAutoCommit = true,
+            //    StatisticsIntervalMs = 5000,
+            //    SessionTimeoutMs = 6000,
+            //    AutoOffsetReset = AutoOffsetReset.Earliest,
+            //    EnablePartitionEof = true,
 
-            using (var Consumer = new ConsumerBuilder<string, string>(config).Build())
-            {
-                Consumer.Subscribe(cbotopicConsumer.Text);
-                try
-                {
-                    //while (true)
-                    //{
-                    try
-                    {
-                        var cr = Consumer.Consume(cts.Token);
-                        txtConsume.Text += cr.Message.Value.ToString();
-                    }
-                    catch (ConsumeException ex)
-                    {
-                        MessageBox.Show($"Error occured: {ex.Error.Reason}");
-                    }
-                    //}
-                }
-                catch (OperationCanceledException)
-                {
-                    // Ctrl-C was pressed.
-                }
-                finally
-                {
-                    Consumer.Close();
-                }
-            }
+            //    PartitionAssignmentStrategy = PartitionAssignmentStrategy.CooperativeSticky
+            //};
+
+            //CancellationTokenSource cts = new CancellationTokenSource();
+            //Console.CancelKeyPress += (_, e) =>
+            //{
+            //    e.Cancel = true; // prevent the process from terminating.
+            //    cts.Cancel();
+            //};
+
+            //using (var Consumer = new ConsumerBuilder<string, string>(config).Build())
+            //{
+            //    Consumer.Subscribe(cbotopicConsumer.Text);
+            //    try
+            //    {
+            //        //while (true)
+            //        //{
+            //        try
+            //        {
+            //            var cr = Consumer.Consume(cts.Token);
+            //            txtConsume.Text += cr.Message.Value.ToString();
+            //        }
+            //        catch (ConsumeException ex)
+            //        {
+            //            MessageBox.Show($"Error occured: {ex.Error.Reason}");
+            //        }
+            //        //}
+            //    }
+            //    catch (OperationCanceledException)
+            //    {
+            //        // Ctrl-C was pressed.
+            //    }
+            //    finally
+            //    {
+            //        Consumer.Close();
+            //    }
+            //}
         }
 
 
@@ -291,6 +292,8 @@ namespace KafkaMan
                             // it is guaranteed that the ConsumeResult instance corresponds
                             // to a Message, and not a PartitionEOF event.
                             txtConsume.Text = $"Received message at {consumeResult.TopicPartitionOffset}: ${consumeResult.Message.Value}";
+                            consumer.Commit(consumeResult);
+
                         }
                         catch (ConsumeException e)
                         {
@@ -306,50 +309,28 @@ namespace KafkaMan
             }
         }
 
-        public void Run_MediumConsumer(string brokerList, string topic, CancellationToken cancellationToken)
+        public void Run_MediumConsumer()
         {
-            var config = new ConsumerConfig
+            var config = KafkaConsumerConfig.GetConfig();
+            string topic = cbotopicConsumer.Text;
+            using var consumer = new ConsumerBuilder<Ignore, string>(config).Build();
+
+            consumer.Subscribe(topic);
+            while (true)
             {
-                GroupId = "groupid-not-used-but-mandatory",
-                BootstrapServers = "192.168.189.128:9092",
-                // partition offsets can be committed to a group even by consumers not
-                // subscribed to the group. in this example, auto commit is disabled
-                // to prevent this from occurring.
-                EnableAutoCommit = false
-            };
-
-            using (var consumer =
-                new ConsumerBuilder<Ignore, string>(config)
-                    .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
-                    .Build())
-            {
-                //consumer.Assign(topics.Select(topic => new TopicPartitionOffset(topic, 0, Offset.Beginning)).ToList());
-
-                consumer.Assign(new TopicPartitionOffset(topic, 0, Offset.Beginning));
-
                 try
                 {
-                    while (true)
-                    {
-                        try
-                        {
-                            var consumeResult = consumer.Consume(cancellationToken);
+                    var consumeResult = consumer.Consume();
+                    txtConsume.Text = $"Received message: {consumeResult.Message.Value} + \n";
+                    lblLog.Text = $"Message received from {consumeResult.Topic} : {consumeResult.Partition}";
 
-                            // Note: End of partition notification has not been enabled, so
-                            // it is guaranteed that the ConsumeResult instance corresponds
-                            // to a Message, and not a PartitionEOF event.
-                            txtConsume.Text = $"Received message at {consumeResult.TopicPartitionOffset}: ${consumeResult.Message.Value}";
-                        }
-                        catch (ConsumeException e)
-                        {
-                            Console.WriteLine($"Consume error: {e.Error.Reason}");
-                        }
-                    }
+                    // Process the message here
+                    consumer.Commit(consumeResult);
                 }
-                catch (OperationCanceledException)
+                catch (ConsumeException e)
                 {
-                    Console.WriteLine("Closing consumer.");
-                    consumer.Close();
+                    MessageBox.Show($"Error occured: {e.Error.Reason}");
+
                 }
             }
         }
