@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using KafkaMan.objs;
 using static Confluent.Kafka.ConfigPropertyNames;
 using System.Threading;
+using System.Net;
 
 namespace KafkaMan
 {
@@ -154,7 +155,7 @@ namespace KafkaMan
 
                         txtTopicName.Text = string.Empty;
                         txtTopicName.Focus();
-
+                        lstTopicList.Items.Clear();
                         func_getTopics();
                     }
                     catch (Exception ex)
@@ -170,7 +171,6 @@ namespace KafkaMan
             func_getTopics();
         }
 
-
         private async void btnProduce_Click(object sender, EventArgs e)
         {
             try
@@ -178,12 +178,30 @@ namespace KafkaMan
                 var config = new ProducerConfig
                 {
                     BootstrapServers = "192.168.189.128:9092",
-                    ClientId = "KafkaExampleProducer",
+                    EnableDeliveryReports = true,
+                    ClientId = Dns.GetHostName(),
+                    // Emit debug logs for message writer process, remove this setting in production
+                    Debug = "msg",
+
+                    // retry settings:
+                    // Receive acknowledgement from all sync replicas
+                    Acks = Acks.All,
+                    // Number of times to retry before giving up
+                    MessageSendMaxRetries = 3,
+                    // Duration to retry before next attempt
+                    RetryBackoffMs = 1000,
+                    // Set to true if you don't want to reorder messages on retry
+                    EnableIdempotence = true
                 };
 
-                using (var producer = new ProducerBuilder<Null, string>(config).Build())
+                using (var producer = new ProducerBuilder<long, string>(config)
+                                    .SetKeySerializer(Serializers.Int64)
+                                    .SetValueSerializer(Serializers.Utf8)
+                                    .SetLogHandler((_, message) =>
+                                    Console.WriteLine($"Facility: {message.Facility}-{message.Level} Message: {message.Message}"))
+                                    .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}. Is Fatal: {e.IsFatal}")).Build())
                 {
-                    var result = producer.ProduceAsync(cboTopicProducer.Text, new Message<Null, string> { Value = "This is a message to topic " + cboTopicProducer.Text + ": " + txtProduce.Text }).Result;
+                    var result = producer.ProduceAsync(cboTopicProducer.Text, new Message<long, string> { Value = $"This is a message to topic {cboTopicProducer.Text}: {txtProduce.Text}" }).Result;
                     lblLog.Text = $"Inserting  into {result.Topic} and Partition {result.Partition}: {result.Status}";
                 }
                 txtProduce.Clear();
@@ -205,57 +223,60 @@ namespace KafkaMan
 
         private void btnConsume_Click(object sender, EventArgs e)
         {
-            CancellationTokenSource cts = new CancellationTokenSource();
-            Run_ManualAssign("test_broker", cbotopicConsumer.Text, cts);
-            //Run_MediumConsumer();
-            //ConsumerConfig config = new ConsumerConfig
-            //{
-            //    BootstrapServers = "192.168.189.128:9092",
-            //    GroupId = "kafka-dotnet-getting-started",
-            //    EnableAutoOffsetStore = false,
-            //    EnableAutoCommit = true,
-            //    StatisticsIntervalMs = 5000,
-            //    SessionTimeoutMs = 6000,
-            //    AutoOffsetReset = AutoOffsetReset.Earliest,
-            //    EnablePartitionEof = true,
-
-            //    PartitionAssignmentStrategy = PartitionAssignmentStrategy.CooperativeSticky
-            //};
-
             //CancellationTokenSource cts = new CancellationTokenSource();
-            //Console.CancelKeyPress += (_, e) =>
-            //{
-            //    e.Cancel = true; // prevent the process from terminating.
-            //    cts.Cancel();
-            //};
+            //Run_ManualAssign("test_broker", cbotopicConsumer.Text, cts);
+            //Run_MediumConsumer();
+            ConsumerConfig config = new ConsumerConfig
+            {
+                BootstrapServers = "192.168.189.128:9092",
+                GroupId = "kafka-dotnet-getting-started",
+                EnableAutoOffsetStore = false,
+                EnableAutoCommit = true,
+                StatisticsIntervalMs = 5000,
+                SessionTimeoutMs = 6000,
+                AutoOffsetReset = AutoOffsetReset.Earliest,
+                EnablePartitionEof = true,
 
-            //using (var Consumer = new ConsumerBuilder<string, string>(config).Build())
-            //{
-            //    Consumer.Subscribe(cbotopicConsumer.Text);
-            //    try
-            //    {
-            //        //while (true)
-            //        //{
-            //        try
-            //        {
-            //            var cr = Consumer.Consume(cts.Token);
-            //            txtConsume.Text += cr.Message.Value.ToString();
-            //        }
-            //        catch (ConsumeException ex)
-            //        {
-            //            MessageBox.Show($"Error occured: {ex.Error.Reason}");
-            //        }
-            //        //}
-            //    }
-            //    catch (OperationCanceledException)
-            //    {
-            //        // Ctrl-C was pressed.
-            //    }
-            //    finally
-            //    {
-            //        Consumer.Close();
-            //    }
-            //}
+                PartitionAssignmentStrategy = PartitionAssignmentStrategy.CooperativeSticky
+            };
+
+            CancellationTokenSource cts = new CancellationTokenSource();
+            Console.CancelKeyPress += (_, e) =>
+            {
+                e.Cancel = true; // prevent the process from terminating.
+                cts.Cancel();
+            };
+
+            using (var Consumer = new ConsumerBuilder<string, string>(config).Build())
+            {
+                Consumer.Subscribe(cbotopicConsumer.Text);
+                try
+                {
+                    while (true)
+                    {
+                        try
+                        {
+                            var cr = Consumer.Consume(cts.Token);
+                            txtConsume.Text += $"{cr.Message.Value.ToString()} \n";
+                            Consumer.Commit(cr);
+
+                        }
+                        catch (ConsumeException ex)
+                        {
+                            MessageBox.Show($"Error occured: {ex.Error.Reason}");
+                        }
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    // Ctrl-C was pressed.
+                }
+                finally
+                {
+
+                    Consumer.Close();
+                }
+            }
         }
 
 
