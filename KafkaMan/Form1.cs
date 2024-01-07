@@ -9,6 +9,15 @@ using KafkaMan.objs;
 using static Confluent.Kafka.ConfigPropertyNames;
 using System.Threading;
 using System.Net;
+using MassTransit;
+using MassTransit.RabbitMqTransport;
+using Microsoft.Extensions.DependencyInjection;
+using static MassTransit.Logging.OperationName;
+using System.Configuration;
+using System.Windows.Forms;
+using System.Xml.Linq;
+using System.Xml;
+using static MassTransit.ValidationResultExtensions;
 
 namespace KafkaMan
 {
@@ -73,7 +82,6 @@ namespace KafkaMan
                     for (int i = 0; i < JTopic.Count; i++)
                     {
                         string topicname = JTopic[i]["Topic"];
-                        cbotopicConsumer.Items.Add(topicname);
                         cboTopicProducer.Items.Add(topicname);
                         int partitionCount = JTopic[i]["Partitions"].Count;
 
@@ -202,7 +210,7 @@ namespace KafkaMan
                                     .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}. Is Fatal: {e.IsFatal}")).Build())
                 {
                     var result = producer.ProduceAsync(cboTopicProducer.Text, new Message<long, string> { Value = $"{DateTime.Now},This is a message to topic {cboTopicProducer.Text}: {txtProduce.Text}" }).Result;
-                    lblLog.Text = $"Inserting  into {result.Topic} and Partition {result.Partition}: {result.Status}, {(result.Status == PersistenceStatus.Persisted ? "Acked by all brokers" : "Not Acked by all brokers")}";
+                    //lblLog.Text = $"Inserting  into {result.Topic} and Partition {result.Partition}: {result.Status}, {(result.Status == PersistenceStatus.Persisted ? "Acked by all brokers" : "Not Acked by all brokers")}";
                 }
                 txtProduce.Clear();
             }
@@ -215,205 +223,239 @@ namespace KafkaMan
         private void btnReferesh_Click_1(object sender, EventArgs e)
         {
             lstTopicList.Items.Clear();
-            cbotopicConsumer.Items.Clear();
             cboTopicProducer.Items.Clear();
-
+            txtConsume.Clear();
+            txtProduce.Clear();
             func_getTopics();
         }
 
-        private void btnConsume_Click(object sender, EventArgs e)
+        //private void btnConsume_Click(object sender, EventArgs e)
+        //{
+        //    //CancellationTokenSource cts = new CancellationTokenSource();
+        //    //Run_ManualAssign("test_broker", cbotopicConsumer.Text, cts);
+        //    //Run_MediumConsumer();
+        //    ConsumerConfig config = new ConsumerConfig
+        //    {
+        //        BootstrapServers = "192.168.189.128:9092",
+        //        GroupId = "kafka-dotnet-getting-started",
+        //        EnableAutoOffsetStore = false,
+        //        EnableAutoCommit = true,
+        //        StatisticsIntervalMs = 5000,
+        //        SessionTimeoutMs = 6000,
+        //        AutoOffsetReset = AutoOffsetReset.Earliest,
+        //        EnablePartitionEof = true,
+
+        //        PartitionAssignmentStrategy = PartitionAssignmentStrategy.CooperativeSticky
+        //    };
+
+        //    CancellationTokenSource cts = new CancellationTokenSource();
+        //    Console.CancelKeyPress += (_, e) =>
+        //    {
+        //        e.Cancel = true; // prevent the process from terminating.
+        //        cts.Cancel();
+        //    };
+
+        //    using (var Consumer = new ConsumerBuilder<string, string>(config).Build())
+        //    {
+        //        Consumer.Subscribe(cbotopicConsumer.Text);
+        //        try
+        //        {
+        //            while (true)
+        //            {
+        //                try
+        //                {
+        //                    var cr = Consumer.Consume(cts.Token);
+        //                    if (cr.Message != null)
+        //                    {
+        //                        txtConsume.Text += $"{cr.Message.Value.ToString()} \n";
+        //                        Consumer.Commit(cr);
+        //                        Consumer.StoreOffset(cr);
+        //                    }
+        //                    else
+        //                        break;
+
+        //                }
+        //                catch (ConsumeException ex)
+        //                {
+        //                    MessageBox.Show($"Error occured: {ex.Error.Reason}");
+        //                }
+        //            }
+        //        }
+        //        catch (OperationCanceledException)
+        //        {
+        //            // Ctrl-C was pressed.
+        //        }
+        //        finally
+        //        {
+
+        //            Consumer.Close();
+        //        }
+        //    }
+        //}
+
+
+        //public void Run_ManualAssign(string brokerList, string topic, CancellationToken cancellationToken)
+        //{
+        //    var config = new ConsumerConfig
+        //    {
+        //        GroupId = "groupid-not-used-but-mandatory",
+        //        BootstrapServers = "192.168.189.128:9092",
+        //        // partition offsets can be committed to a group even by consumers not
+        //        // subscribed to the group. in this example, auto commit is disabled
+        //        // to prevent this from occurring.
+        //        EnableAutoCommit = false
+        //    };
+
+        //    using (var consumer =
+        //        new ConsumerBuilder<Ignore, string>(config)
+        //            .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
+        //            .Build())
+        //    {
+        //        //consumer.Assign(topics.Select(topic => new TopicPartitionOffset(topic, 0, Offset.Beginning)).ToList());
+
+        //        consumer.Assign(new TopicPartitionOffset(topic, 0, Offset.Beginning));
+
+        //        try
+        //        {
+        //            while (true)
+        //            {
+        //                try
+        //                {
+        //                    var consumeResult = consumer.Consume(cancellationToken);
+
+        //                    // Note: End of partition notification has not been enabled, so
+        //                    // it is guaranteed that the ConsumeResult instance corresponds
+        //                    // to a Message, and not a PartitionEOF event.
+        //                    txtConsume.Text = $"Received message at {consumeResult.TopicPartitionOffset}: ${consumeResult.Message.Value}";
+        //                    consumer.Commit(consumeResult);
+
+        //                }
+        //                catch (ConsumeException e)
+        //                {
+        //                    Console.WriteLine($"Consume error: {e.Error.Reason}");
+        //                }
+        //            }
+        //        }
+        //        catch (OperationCanceledException)
+        //        {
+        //            Console.WriteLine("Closing consumer.");
+        //            consumer.Close();
+        //        }
+        //    }
+        //}
+
+        //public void Run_MediumConsumer()
+        //{
+        //    var config = KafkaConsumerConfig.GetConfig();
+        //    string topic = cbotopicConsumer.Text;
+        //    using var consumer = new ConsumerBuilder<Ignore, string>(config).Build();
+
+        //    consumer.Subscribe(topic);
+        //    while (true)
+        //    {
+        //        try
+        //        {
+        //            var consumeResult = consumer.Consume();
+        //            txtConsume.Text = $"Received message: {consumeResult.Message.Value} + \n";
+        //            lblLog.Text = $"Message received from {consumeResult.Topic} : {consumeResult.Partition}";
+
+        //            // Process the message here
+        //            consumer.Commit(consumeResult);
+        //        }
+        //        catch (ConsumeException e)
+        //        {
+        //            MessageBox.Show($"Error occured: {e.Error.Reason}");
+
+        //        }
+        //    }
+        //}
+
+        //private void btnNewConsumer_Click(object sender, EventArgs e)
+        //{
+
+        //    var _consumerConfig = new ConsumerConfig
+        //    {
+        //        BootstrapServers = "192.168.189.128:9092",
+        //        EnableAutoCommit = false,
+        //        EnableAutoOffsetStore = false,
+        //        MaxPollIntervalMs = 300000,
+        //        GroupId = "groupid-not-used-but-mandatory",
+
+        //        // Read messages from start if no commit exists.
+        //        AutoOffsetReset = AutoOffsetReset.Earliest
+        //    };
+        //    using var consumer = new ConsumerBuilder<long, string>(_consumerConfig)
+        //        .SetKeyDeserializer(Deserializers.Int64)
+        //        .SetValueDeserializer(Deserializers.Utf8)
+        //        .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
+        //        .Build();
+        //    try
+        //    {
+        //        consumer.Subscribe(cbotopicConsumer.Text);
+        //        Console.WriteLine("\nConsumer loop started...\n\n");
+        //        while (true)
+        //        {
+        //            var result =
+        //                consumer.Consume(
+        //                    TimeSpan.FromMilliseconds(_consumerConfig.MaxPollIntervalMs - 1000 ?? 250000));
+        //            var message = result?.Message?.Value;
+        //            if (message == null)
+        //            {
+        //                continue;
+        //            }
+
+        //            lblLog.Text = $"Received: {result.Message.Key}:{message} from partition: {result.Partition.Value}";
+
+        //            consumer.Commit(result);
+        //            consumer.StoreOffset(result);
+        //            Thread.Sleep(TimeSpan.FromSeconds(5));
+        //        }
+        //    }
+        //    catch (KafkaException ex)
+        //    {
+        //        lblLog.Text = $"Consume error: {ex.Message}";
+        //    }
+        //    finally
+        //    {
+        //        consumer.Close();
+        //    }
+        //}
+
+        private void btnProduceTransit_Click(object sender, EventArgs e)
         {
-            //CancellationTokenSource cts = new CancellationTokenSource();
-            //Run_ManualAssign("test_broker", cbotopicConsumer.Text, cts);
-            //Run_MediumConsumer();
-            ConsumerConfig config = new ConsumerConfig
+            var config = new ProducerConfig
             {
                 BootstrapServers = "192.168.189.128:9092",
-                GroupId = "kafka-dotnet-getting-started",
-                EnableAutoOffsetStore = false,
-                EnableAutoCommit = true,
-                StatisticsIntervalMs = 5000,
-                SessionTimeoutMs = 6000,
-                AutoOffsetReset = AutoOffsetReset.Earliest,
-                EnablePartitionEof = true,
-
-                PartitionAssignmentStrategy = PartitionAssignmentStrategy.CooperativeSticky
+                Acks = Acks.Leader,
             };
 
-            CancellationTokenSource cts = new CancellationTokenSource();
-            Console.CancelKeyPress += (_, e) =>
-            {
-                e.Cancel = true; // prevent the process from terminating.
-                cts.Cancel();
-            };
-
-            using (var Consumer = new ConsumerBuilder<string, string>(config).Build())
-            {
-                Consumer.Subscribe(cbotopicConsumer.Text);
-                try
-                {
-                    while (true)
-                    {
-                        try
-                        {
-                            var cr = Consumer.Consume(cts.Token);
-                            if (cr.Message != null)
-                            {
-                                txtConsume.Text += $"{cr.Message.Value.ToString()} \n";
-                                Consumer.Commit(cr);
-                                Consumer.StoreOffset(cr);
-                            }
-                            else
-                                break;
-
-                        }
-                        catch (ConsumeException ex)
-                        {
-                            MessageBox.Show($"Error occured: {ex.Error.Reason}");
-                        }
-                    }
-                }
-                catch (OperationCanceledException)
-                {
-                    // Ctrl-C was pressed.
-                }
-                finally
-                {
-
-                    Consumer.Close();
-                }
-            }
-        }
-
-
-        public void Run_ManualAssign(string brokerList, string topic, CancellationToken cancellationToken)
-        {
-            var config = new ConsumerConfig
-            {
-                GroupId = "groupid-not-used-but-mandatory",
-                BootstrapServers = "192.168.189.128:9092",
-                // partition offsets can be committed to a group even by consumers not
-                // subscribed to the group. in this example, auto commit is disabled
-                // to prevent this from occurring.
-                EnableAutoCommit = false
-            };
-
-            using (var consumer =
-                new ConsumerBuilder<Ignore, string>(config)
-                    .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
-                    .Build())
-            {
-                //consumer.Assign(topics.Select(topic => new TopicPartitionOffset(topic, 0, Offset.Beginning)).ToList());
-
-                consumer.Assign(new TopicPartitionOffset(topic, 0, Offset.Beginning));
-
-                try
-                {
-                    while (true)
-                    {
-                        try
-                        {
-                            var consumeResult = consumer.Consume(cancellationToken);
-
-                            // Note: End of partition notification has not been enabled, so
-                            // it is guaranteed that the ConsumeResult instance corresponds
-                            // to a Message, and not a PartitionEOF event.
-                            txtConsume.Text = $"Received message at {consumeResult.TopicPartitionOffset}: ${consumeResult.Message.Value}";
-                            consumer.Commit(consumeResult);
-
-                        }
-                        catch (ConsumeException e)
-                        {
-                            Console.WriteLine($"Consume error: {e.Error.Reason}");
-                        }
-                    }
-                }
-                catch (OperationCanceledException)
-                {
-                    Console.WriteLine("Closing consumer.");
-                    consumer.Close();
-                }
-            }
-        }
-
-        public void Run_MediumConsumer()
-        {
-            var config = KafkaConsumerConfig.GetConfig();
-            string topic = cbotopicConsumer.Text;
-            using var consumer = new ConsumerBuilder<Ignore, string>(config).Build();
-
-            consumer.Subscribe(topic);
-            while (true)
-            {
-                try
-                {
-                    var consumeResult = consumer.Consume();
-                    txtConsume.Text = $"Received message: {consumeResult.Message.Value} + \n";
-                    lblLog.Text = $"Message received from {consumeResult.Topic} : {consumeResult.Partition}";
-
-                    // Process the message here
-                    consumer.Commit(consumeResult);
-                }
-                catch (ConsumeException e)
-                {
-                    MessageBox.Show($"Error occured: {e.Error.Reason}");
-
-                }
-            }
-        }
-
-        private void btnNewConsumer_Click(object sender, EventArgs e)
-        {
-
-            var _consumerConfig = new ConsumerConfig
-            {
-                BootstrapServers = "192.168.189.128:9092",
-                EnableAutoCommit = false,
-                EnableAutoOffsetStore = false,
-                MaxPollIntervalMs = 300000,
-                GroupId = "default",
-
-                // Read messages from start if no commit exists.
-                AutoOffsetReset = AutoOffsetReset.Earliest
-            };
-            using var consumer = new ConsumerBuilder<long, string>(_consumerConfig)
-                .SetKeyDeserializer(Deserializers.Int64)
-                .SetValueDeserializer(Deserializers.Utf8)
-                .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
-                .Build();
+            using var prod = new ProducerBuilder<Null, string>(config).Build();
             try
             {
-                consumer.Subscribe(cbotopicConsumer.Text);
-                Console.WriteLine("\nConsumer loop started...\n\n");
-                while (true)
-                {
-                    var result =
-                        consumer.Consume(
-                            TimeSpan.FromMilliseconds(_consumerConfig.MaxPollIntervalMs - 1000 ?? 250000));
-                    var message = result?.Message?.Value;
-                    if (message == null)
-                    {
-                        continue;
-                    }
 
-                    Console.WriteLine(
-                        $"Received: {result.Message.Key}:{message} from partition: {result.Partition.Value}");
+                var result = prod.ProduceAsync(
+                    cboTopicProducer.Text,
+                    //new Message<Null, string> { Value =$"{DateTime.Now},Topic:{cboTopicProducer.Text},{new Guid().ToString()}" }).Result;
+                    new Message<Null, string> { Value = JsonConvert.SerializeObject(new SvcLog(cboTopicProducer.Text, txtProduce.Text)) }
+                ).Result;
 
-                    consumer.Commit(result);
-                    consumer.StoreOffset(result);
-                    Thread.Sleep(TimeSpan.FromSeconds(5));
-                }
+                txtProduce.Clear();
+
+                txtConsume.Text = $"Inserting  into {result.Topic} and Partition {result.Partition}: {result.Status},{result.Value}{(result.Status == PersistenceStatus.Persisted ? "Acked by the leader" : "Not Acked")}";
             }
-            catch (KafkaException ex)
+            catch (ProduceException<Null, string> exp)
             {
-                Console.WriteLine($"Consume error: {ex.Message}");
-                Console.WriteLine("Exiting producer...");
+                txtConsume.Text += exp.Message + "\n";
             }
             finally
             {
-                consumer.Close();
+
             }
         }
-    }
 
+        private void btnConsumePure_Click(object sender, EventArgs e)
+        {
+
+        }
+    }
 }

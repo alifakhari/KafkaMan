@@ -43,18 +43,13 @@
             numberReplica = new NumericUpDown();
             label4 = new Label();
             groupBox2 = new GroupBox();
+            btnProduceTransit = new Button();
             btnProduce = new Button();
             cboTopicProducer = new ComboBox();
             label6 = new Label();
             label5 = new Label();
             txtProduce = new TextBox();
             groupBox3 = new GroupBox();
-            btnNewConsumer = new Button();
-            lblLog = new Label();
-            btnConsume = new Button();
-            cbotopicConsumer = new ComboBox();
-            label7 = new Label();
-            label8 = new Label();
             txtConsume = new TextBox();
             ((System.ComponentModel.ISupportInitialize)numberPartition).BeginInit();
             groupBox1.SuspendLayout();
@@ -195,6 +190,7 @@
             // 
             // groupBox2
             // 
+            groupBox2.Controls.Add(btnProduceTransit);
             groupBox2.Controls.Add(btnProduce);
             groupBox2.Controls.Add(cboTopicProducer);
             groupBox2.Controls.Add(label6);
@@ -207,6 +203,16 @@
             groupBox2.TabStop = false;
             groupBox2.Text = "Produce";
             // 
+            // btnProduceTransit
+            // 
+            btnProduceTransit.Location = new Point(224, 149);
+            btnProduceTransit.Name = "btnProduceTransit";
+            btnProduceTransit.Size = new Size(121, 25);
+            btnProduceTransit.TabIndex = 14;
+            btnProduceTransit.Text = "Produce ...";
+            btnProduceTransit.UseVisualStyleBackColor = true;
+            btnProduceTransit.Click += btnProduceTransit_Click;
+            // 
             // btnProduce
             // 
             btnProduce.Location = new Point(224, 149);
@@ -215,6 +221,7 @@
             btnProduce.TabIndex = 13;
             btnProduce.Text = "Produce ...";
             btnProduce.UseVisualStyleBackColor = true;
+            btnProduce.Visible = false;
             btnProduce.Click += btnProduce_Click;
             // 
             // cboTopicProducer
@@ -256,85 +263,22 @@
             // 
             // groupBox3
             // 
-            groupBox3.Controls.Add(btnNewConsumer);
-            groupBox3.Controls.Add(lblLog);
-            groupBox3.Controls.Add(btnConsume);
-            groupBox3.Controls.Add(cbotopicConsumer);
-            groupBox3.Controls.Add(label7);
-            groupBox3.Controls.Add(label8);
             groupBox3.Controls.Add(txtConsume);
             groupBox3.Location = new Point(362, 208);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(470, 257);
             groupBox3.TabIndex = 14;
             groupBox3.TabStop = false;
-            groupBox3.Text = "Consume";
-            // 
-            // btnNewConsumer
-            // 
-            btnNewConsumer.Location = new Point(214, 226);
-            btnNewConsumer.Name = "btnNewConsumer";
-            btnNewConsumer.Size = new Size(121, 25);
-            btnNewConsumer.TabIndex = 15;
-            btnNewConsumer.Text = "new consume";
-            btnNewConsumer.UseVisualStyleBackColor = true;
-            btnNewConsumer.Click += btnNewConsumer_Click;
-            // 
-            // lblLog
-            // 
-            lblLog.AutoSize = true;
-            lblLog.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            lblLog.Location = new Point(6, 210);
-            lblLog.Name = "lblLog";
-            lblLog.Size = new Size(0, 15);
-            lblLog.TabIndex = 14;
-            // 
-            // btnConsume
-            // 
-            btnConsume.Location = new Point(238, 17);
-            btnConsume.Name = "btnConsume";
-            btnConsume.Size = new Size(121, 25);
-            btnConsume.TabIndex = 13;
-            btnConsume.Text = "Consume ...";
-            btnConsume.UseVisualStyleBackColor = true;
-            btnConsume.Click += btnConsume_Click;
-            // 
-            // cbotopicConsumer
-            // 
-            cbotopicConsumer.DropDownStyle = ComboBoxStyle.DropDownList;
-            cbotopicConsumer.FormattingEnabled = true;
-            cbotopicConsumer.Location = new Point(97, 18);
-            cbotopicConsumer.Name = "cbotopicConsumer";
-            cbotopicConsumer.Size = new Size(121, 25);
-            cbotopicConsumer.TabIndex = 12;
-            // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.Location = new Point(6, 21);
-            label7.Name = "label7";
-            label7.Size = new Size(85, 17);
-            label7.TabIndex = 11;
-            label7.Text = "Topic Name: ";
-            label7.TextAlign = ContentAlignment.MiddleRight;
-            // 
-            // label8
-            // 
-            label8.AutoSize = true;
-            label8.Location = new Point(23, 52);
-            label8.Name = "label8";
-            label8.Size = new Size(68, 17);
-            label8.TabIndex = 4;
-            label8.Text = "Message: ";
-            label8.TextAlign = ContentAlignment.MiddleRight;
+            groupBox3.Text = "Log";
             // 
             // txtConsume
             // 
-            txtConsume.Location = new Point(97, 49);
+            txtConsume.Location = new Point(6, 24);
             txtConsume.Multiline = true;
             txtConsume.Name = "txtConsume";
             txtConsume.ReadOnly = true;
-            txtConsume.Size = new Size(367, 132);
+            txtConsume.ScrollBars = ScrollBars.Vertical;
+            txtConsume.Size = new Size(458, 227);
             txtConsume.TabIndex = 3;
             // 
             // Form1
@@ -382,13 +326,8 @@
         private TextBox txtProduce;
         private Button btnProduce;
         private GroupBox groupBox3;
-        private ComboBox cbotopicConsumer;
-        private Label label7;
-        private Label label8;
         private TextBox txtConsume;
         private Button btnReferesh;
-        private Label lblLog;
-        private Button btnNewConsumer;
-        private Button btnConsume;
+        private Button btnProduceTransit;
     }
 }
