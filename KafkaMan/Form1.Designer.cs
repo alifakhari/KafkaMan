@@ -43,14 +43,13 @@
             numberReplica = new NumericUpDown();
             label4 = new Label();
             groupBox2 = new GroupBox();
-            btnProduceTransit = new Button();
-            btnProduce = new Button();
+            this.btnProduce = new Button();
             cboTopicProducer = new ComboBox();
             label6 = new Label();
             label5 = new Label();
             txtProduce = new TextBox();
             groupBox3 = new GroupBox();
-            txtConsume = new TextBox();
+            txtLog = new TextBox();
             ((System.ComponentModel.ISupportInitialize)numberPartition).BeginInit();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numberReplica).BeginInit();
@@ -190,8 +189,7 @@
             // 
             // groupBox2
             // 
-            groupBox2.Controls.Add(btnProduceTransit);
-            groupBox2.Controls.Add(btnProduce);
+            groupBox2.Controls.Add(this.btnProduce);
             groupBox2.Controls.Add(cboTopicProducer);
             groupBox2.Controls.Add(label6);
             groupBox2.Controls.Add(label5);
@@ -203,26 +201,15 @@
             groupBox2.TabStop = false;
             groupBox2.Text = "Produce";
             // 
-            // btnProduceTransit
-            // 
-            btnProduceTransit.Location = new Point(224, 149);
-            btnProduceTransit.Name = "btnProduceTransit";
-            btnProduceTransit.Size = new Size(121, 25);
-            btnProduceTransit.TabIndex = 14;
-            btnProduceTransit.Text = "Produce ...";
-            btnProduceTransit.UseVisualStyleBackColor = true;
-            btnProduceTransit.Click += btnProduceTransit_Click;
-            // 
             // btnProduce
             // 
-            btnProduce.Location = new Point(224, 149);
-            btnProduce.Name = "btnProduce";
-            btnProduce.Size = new Size(121, 25);
-            btnProduce.TabIndex = 13;
-            btnProduce.Text = "Produce ...";
-            btnProduce.UseVisualStyleBackColor = true;
-            btnProduce.Visible = false;
-            btnProduce.Click += btnProduce_Click;
+            this.btnProduce.Location = new Point(224, 150);
+            this.btnProduce.Name = "btnProduce";
+            this.btnProduce.Size = new Size(121, 25);
+            this.btnProduce.TabIndex = 14;
+            this.btnProduce.Text = "Produce ...";
+            this.btnProduce.UseVisualStyleBackColor = true;
+            this.btnProduce.Click += this.btnProduce_Click;
             // 
             // cboTopicProducer
             // 
@@ -263,7 +250,7 @@
             // 
             // groupBox3
             // 
-            groupBox3.Controls.Add(txtConsume);
+            groupBox3.Controls.Add(txtLog);
             groupBox3.Location = new Point(362, 208);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(470, 257);
@@ -271,15 +258,15 @@
             groupBox3.TabStop = false;
             groupBox3.Text = "Log";
             // 
-            // txtConsume
+            // txtLog
             // 
-            txtConsume.Location = new Point(6, 24);
-            txtConsume.Multiline = true;
-            txtConsume.Name = "txtConsume";
-            txtConsume.ReadOnly = true;
-            txtConsume.ScrollBars = ScrollBars.Vertical;
-            txtConsume.Size = new Size(458, 227);
-            txtConsume.TabIndex = 3;
+            txtLog.Location = new Point(6, 24);
+            txtLog.Multiline = true;
+            txtLog.Name = "txtLog";
+            txtLog.ReadOnly = true;
+            txtLog.ScrollBars = ScrollBars.Vertical;
+            txtLog.Size = new Size(458, 227);
+            txtLog.TabIndex = 3;
             // 
             // Form1
             // 
@@ -326,8 +313,7 @@
         private TextBox txtProduce;
         private Button btnProduce;
         private GroupBox groupBox3;
-        private TextBox txtConsume;
+        private TextBox txtLog;
         private Button btnReferesh;
-        private Button btnProduceTransit;
     }
 }
