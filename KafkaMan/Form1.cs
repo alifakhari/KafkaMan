@@ -441,7 +441,7 @@ namespace KafkaMan
 
                 txtProduce.Clear();
 
-                txtConsume.Text = $"Inserting  into {result.Topic} and Partition {result.Partition}: {result.Status},{result.Value}{(result.Status == PersistenceStatus.Persisted ? "Acked by the leader" : "Not Acked")}";
+                txtConsume.Text = $"Inserting  into {result.Topic} and Partition {result.Partition}: {result.Status}, {result.Value}, {(result.Status == PersistenceStatus.Persisted ? "Acked by the leader" : "Not Acked")}";
             }
             catch (ProduceException<Null, string> exp)
             {
